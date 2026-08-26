@@ -113,20 +113,25 @@ class CinohCityCouncilSpider(LegistarSpider):
         note_text = "".join(Selector(text=match.group(1)).css("*::text").getall())
         note_text = re.sub(r"\s+", " ", note_text).strip()
 
-        if note_text.strip().lower() == "notice of cancellation":
-            return ""
-        if note_text.strip().lower() == "notice of time & location change":
+        if note_text.strip().lower() in (
+            "notice of cancellation",
+            "notice of time & location change",
+        ):
             return ""
 
         return note_text
 
-    def _parse_legistar_events(self, response: scrapy.http.Response) -> Iterable[Dict]:  # noqa
+    def _parse_legistar_events(
+        self, response: scrapy.http.Response
+    ) -> Iterable[Dict]:  # noqa
         events_table = response.css("table.rgMasterTable")[0]
 
         headers = []
         for header in events_table.css("th[class^='rgHeader']"):
             header_text = (
-                " ".join(header.css("*::text").extract()).replace("&nbsp;", " ").strip()  # noqa
+                " ".join(header.css("*::text").extract())
+                .replace("&nbsp;", " ")
+                .strip()  # noqa
             )
             header_inputs = header.css("input")
             if header_text:
@@ -258,12 +263,6 @@ class CinohCityCouncilSpider(LegistarSpider):
 
         links = []
 
-        if obj.get("Name"):
-            links.append({"title": "meeting page", "href": obj["Name"]["url"]})
-
-        if obj.get("iCalendar"):
-            links.append({"title": "iCalendar", "href": obj["iCalendar"]["url"]})
-
         if not obj.get("Meeting Details") == "Meeting\u00a0details":
             links.append(
                 {"title": "Meeting Details", "href": obj["Meeting Details"]["url"]}
@@ -362,6 +361,7 @@ class CinohCityCouncilSpider(LegistarSpider):
         try:
             meeting_date = parse(date_str, fuzzy=True).date()
         except (ValueError, OverflowError):
+            self.logger.warning(f"Unable to parse date: {date_str}")
             return None
 
         norm_legistar_title = self._normalize_title(title)

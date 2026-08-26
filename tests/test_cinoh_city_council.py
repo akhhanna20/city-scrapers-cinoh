@@ -117,16 +117,7 @@ def test_source():
 
 def test_links():
     assert parsed_items[1]["links"] == [
-        {
-            "title": "meeting page",
-            "href": "https://cincinnatioh.legistar.com/DepartmentDetail"
-            ".aspx?ID=47053&GUID=2F284759-56BA-4D9D-B640-E02600D83497",
-        },
-        {
-            "title": "iCalendar",
-            "href": "https://cincinnatioh.legistar.com/View.ashx?M=IC&ID"
-            "=1425666&GUID=E91E0675-2E09-49AE-81CA-EB45052DF089",
-        },
+
         {
             "title": "Meeting Details",
             "href": "https://cincinnatioh.legistar.com/MeetingDetail.aspx?ID="
