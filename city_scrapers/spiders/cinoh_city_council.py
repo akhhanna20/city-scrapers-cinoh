@@ -90,7 +90,7 @@ class CinohCityCouncilSpider(LegistarSpider):
                 source=self.legistar_source(obj),
             )
 
-            # Dedupe by title + start datetime (date and time combined).
+            # Dedupe by title + start datetime.
             dedupe_key = (meeting["title"].strip().lower(), meeting["start"])
             if dedupe_key in seen_meetings:
                 continue
@@ -151,8 +151,7 @@ class CinohCityCouncilSpider(LegistarSpider):
                         .replace("&nbsp;", " ")
                         .strip()
                     )
-                    # Keep the raw HTML for the location cell so we can
-                    # separate venue name / address / <em> notes later.
+                    # Keep the raw HTML for the location cell
                     if header == "Meeting Location":
                         data["_MeetingLocationHtml"] = field.get()
 
@@ -222,9 +221,6 @@ class CinohCityCouncilSpider(LegistarSpider):
         # Keep what's before the first <br> -- anything after is extra wording
         html = re.split(r"<br\s*/?>", html, maxsplit=1, flags=re.IGNORECASE)[0]
 
-        # Extract text via Selector so ANY wrapping tag (<font>, <span>, etc.)
-        # is stripped. Preserve internal "\n" so multi-line
-        # venue-name / street / city-state-zip cells still split correctly.
         raw_text = "".join(Selector(text=html).css("*::text").getall())
         lines = [re.sub(r"\s+", " ", line).strip() for line in raw_text.split("\n")]
         lines = [line for line in lines if line]

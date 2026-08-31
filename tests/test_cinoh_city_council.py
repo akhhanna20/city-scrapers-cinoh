@@ -117,7 +117,6 @@ def test_source():
 
 def test_links():
     assert parsed_items[1]["links"] == [
-
         {
             "title": "Meeting Details",
             "href": "https://cincinnatioh.legistar.com/MeetingDetail.aspx?ID="
